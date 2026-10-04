@@ -241,7 +241,7 @@ export class Menus {
     s.innerHTML = `
       <div class="panel glass">
         <div class="head"><button class="icon-btn back" aria-label="Back">${ICONS.back}</button><h2>Settings</h2></div>
-        <div class="toggle-row"><span>Sound effects</span>${sw(!settings.muted)}</div>
+        <div class="toggle-row"><span>Sound</span>${sw(!settings.muted)}</div>
         <div class="toggle-row music"><span>Music</span>${sw(settings.music)}</div>
         <div class="field"><label>Graphics quality</label><div class="seg quality">
           ${(['auto', 'high', 'medium', 'low'] as Quality[]).map((q) => `<button data-v="${q}" class="${q === settings.quality ? 'on' : ''}">${q[0].toUpperCase() + q.slice(1)}</button>`).join('')}
