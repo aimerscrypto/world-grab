@@ -199,6 +199,9 @@ export const CONFIG = {
     /** Bots get bolder as matches drag on: advantage requirement is divided
      *  by (1 + aggressionRamp * minutes), floored at 1.05. */
     aggressionRamp: 0.08,
+    /** A bot that hasn't gained a country for this long (s) attacks at even
+     *  odds with up to 6 sources — prevents endless bot-vs-bot stalemates. */
+    stalemateSeconds: 45,
     /** Attract-mode (title screen) bot settings. */
     attractDifficulty: 'normal' as Difficulty,
     attractSpeed: 1.6,

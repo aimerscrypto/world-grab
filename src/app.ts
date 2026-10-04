@@ -17,6 +17,7 @@ import { InputController } from './input';
 import { flagUrl } from './ui/flags';
 import { Match } from './match';
 import { NEUTRAL } from './game/game';
+import { createBots } from './game/bots';
 
 const hex = (n: number) => '#' + n.toString(16).padStart(6, '0');
 const esc = (s: string) => s.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]!);
@@ -165,6 +166,8 @@ export class App {
       onEnd: (win) => this.onMatchEnd(win),
       onPlayerHit: () => this.pulseEdge(),
     });
+    this.match.thinkers = createBots(this.match.game, opts.attract ? CONFIG.bots.attractDifficulty : opts.difficulty);
+    if (opts.attract) this.match.game.speed = CONFIG.bots.attractSpeed;
     this.rig.attract = !!opts.attract;
     this.hud.show(!opts.attract);
     this.hud.setPaused(false);
