@@ -399,3 +399,10 @@ canvas.stage { position: absolute; inset: 0; width: 100%; height: 100%; display:
 .floaters { z-index: 2; }
 .combo, .banner { z-index: 7; }
 .hud:not(.show), .hud:not(.show) * { pointer-events: none !important; }
+
+/* browsers without color-mix (older Safari): flat colours instead of gradients */
+@supports not (color: color-mix(in srgb, red 50%, white)) {
+  .btn { background: var(--b); box-shadow: 0 5px 0 rgba(0,0,0,0.35), 0 10px 22px rgba(0,0,0,0.35); }
+  .btn:active, .btn.pressed { box-shadow: 0 1px 0 rgba(0,0,0,0.35); }
+  .badge.owned { background: var(--c); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35); }
+}

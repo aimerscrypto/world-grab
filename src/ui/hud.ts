@@ -88,6 +88,7 @@ export class Hud {
     this.segs = game.factions.map((f) => {
       const s = document.createElement('div');
       s.className = 'seg-b';
+      s.style.background = f.css; // fallback when color-mix is unsupported
       s.style.background = `linear-gradient(180deg, color-mix(in srgb, ${f.css} 75%, white), ${f.css})`;
       s.style.flexGrow = '0';
       this.bar.appendChild(s);
