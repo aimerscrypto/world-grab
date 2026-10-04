@@ -487,3 +487,12 @@ export async function regionSilhouette(id: RegionId, w: number, h: number): Prom
   projection.precision(1);
   return geoPath(projection)(geo) ?? '';
 }
+
+/** Approximate playable-country count for a region (no projection needed). */
+export async function regionCount(id: RegionId): Promise<number> {
+  const cached = regionCache.get(id);
+  if (cached) return cached.playableCount;
+  const world = await loadWorld();
+  const def = regionById(id);
+  return world.countries.filter((c) => def.member(c.meta, c.key)).length;
+}

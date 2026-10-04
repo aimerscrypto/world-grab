@@ -78,6 +78,7 @@ export class Match {
     ctx.units.clear();
     ctx.fx.clear();
     ctx.floaters.clear();
+    badges.setVisible(true);
     hud.setFactions(this.game);
   }
 
@@ -343,7 +344,68 @@ export class Match {
     return f < 0 ? CONFIG.colors.neutral : this.game.factions[f].color;
   }
 
+  // ------------------------------------------------------------ timelapse replay
+  private replay: { idx: number; timer: number; step: number; hold: number; shown: Int8Array } | null = null;
+
+  get replaying() { return !!this.replay; }
+
+  /** Plays the recorded ownership snapshots back as a fast timelapse (loops). */
+  startReplay() {
+    const snaps = this.game.snapshots;
+    if (snaps.length < 2) return;
+    this.clearDrag();
+    this.ctx.units.clear();
+    this.ctx.badges.setVisible(false);
+    const step = Math.min(0.25, Math.max(0.05, 7 / snaps.length));
+    this.replay = { idx: 0, timer: 0, step, hold: 0, shown: snaps[0].slice() };
+    this.applySnapshot(snaps[0], true);
+  }
+
+  private applySnapshot(s: Int8Array, instant: boolean) {
+    const { board } = this.ctx;
+    const r = this.replay!;
+    for (let i = 0; i < s.length; i++) {
+      if (!instant && r.shown[i] === s[i]) continue;
+      r.shown[i] = s[i];
+      const col = this.factionColor(s[i]);
+      if (instant) board.setColorInstant(i, col);
+      else board.setColorAnimated(i, col, false);
+      board.setOwned(i, s[i] >= 0);
+    }
+  }
+
+  /** Returns replay progress 0..1. */
+  updateReplay(dt: number): number {
+    const r = this.replay;
+    if (!r) return 0;
+    const snaps = this.game.snapshots;
+    if (r.hold > 0) {
+      r.hold -= dt;
+      if (r.hold <= 0) {
+        r.idx = 0;
+        this.applySnapshot(snaps[0], true);
+      }
+      return 1;
+    }
+    r.timer += dt;
+    while (r.timer >= r.step && r.idx < snaps.length - 1) {
+      r.timer -= r.step;
+      r.idx++;
+      this.applySnapshot(snaps[r.idx], false);
+    }
+    if (r.idx >= snaps.length - 1) r.hold = 2.5;
+    this.ctx.fx.update(dt, this.game.map.unit);
+    return r.idx / (snaps.length - 1);
+  }
+
+  stopReplay() {
+    this.replay = null;
+    this.ctx.badges.setVisible(true);
+  }
+
   dispose() {
+    this.replay = null;
+    this.ctx.badges.setVisible(true);
     this.clearDrag();
     this.ctx.units.clear();
     this.ctx.arrows.begin(0);

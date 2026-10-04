@@ -6,4 +6,4 @@ import { App } from './app';
 
 const root = document.getElementById('app')!;
 const app = new App(root);
-app.startMatch({ region: 'europe', bots: 3, difficulty: 'normal', playerStart: -1 });
+app.boot();
