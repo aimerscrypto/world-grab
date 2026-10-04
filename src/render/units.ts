@@ -62,6 +62,7 @@ export class UnitRenderer {
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
     });
     const body3 = new THREE.Mesh(this.bodyGeo, this.bodyMat);
     const glow = new THREE.Mesh(this.glowGeo, this.glowMat);

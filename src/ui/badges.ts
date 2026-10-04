@@ -53,8 +53,6 @@ export class BadgeLayer {
     }
   }
 
-  setOwnerColors(colors: string[]) { this.colors = colors; }
-
   setOwner(i: number, owner: number) {
     const b = this.badges[i];
     if (!b || b.owner === owner) return;
@@ -76,7 +74,8 @@ export class BadgeLayer {
         b.el.insertBefore(img, b.num);
         b.flag = img;
       }
-      b.el.animate([{ transform: `${this.transformOf(b)} scale(1.5)` }, { transform: this.transformOf(b) }], { duration: 380, easing: 'cubic-bezier(.2,1.6,.4,1)' });
+      // the individual 'scale' property composes with the positioning transform
+      b.el.animate([{ scale: '1.6' }, { scale: '1' }], { duration: 420, easing: 'cubic-bezier(.2,1.6,.4,1)' });
     }
     this.layoutTimer = 0;
   }
@@ -168,12 +167,6 @@ export class BadgeLayer {
       if (!ok && b.owner !== 0) { b.visible = false; continue; }
       placed.push(i);
     }
-  }
-
-  /** Screen position of a badge (for floating texts etc.). */
-  screenPos(i: number): { x: number; y: number } {
-    const b = this.badges[i];
-    return { x: b.x, y: b.y };
   }
 
   setVisible(v: boolean) { this.root.style.display = v ? '' : 'none'; }

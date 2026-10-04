@@ -398,3 +398,4 @@ canvas.stage { position: absolute; inset: 0; width: 100%; height: 100%; display:
 .badges { z-index: 1; }
 .floaters { z-index: 2; }
 .combo, .banner { z-index: 7; }
+.hud:not(.show), .hud:not(.show) * { pointer-events: none !important; }

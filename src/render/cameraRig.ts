@@ -158,8 +158,6 @@ export class CameraRig {
     if (performance.now() - this.lastPanTime > 80) this.velocity.set(0, 0);
   }
 
-  get isPanning() { return this.panning; }
-
   // ------------------------------------------------------------- zoom
   zoomAt(sx: number, sy: number, factor: number) {
     this.fly = null;

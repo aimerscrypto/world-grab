@@ -34,7 +34,7 @@ export interface StartOptions {
   attract?: boolean;
 }
 
-type AppState = 'boot' | 'menu' | 'playing' | 'results';
+type AppState = 'boot' | 'loading' | 'menu' | 'playing' | 'results';
 
 export class App {
   readonly root: HTMLElement;
@@ -195,7 +195,7 @@ export class App {
   }
 
   async goTitle() {
-    this.state = 'menu';
+    this.state = 'loading';
     this.setPausedTag(false);
     this.hud.show(false);
     this.hideInfo();
@@ -206,18 +206,21 @@ export class App {
       await this.startAttract();
       this.loading.hide();
     }
+    this.state = 'menu';
     this.menus.refreshTitle();
     this.menus.show('title');
   }
 
   async startFromMenu(o: StartOptions) {
     this.lastStart = { ...o, attract: false };
+    this.state = 'loading';
     saveSettings();
     this.menus.show('none');
     this.input.reset();
     if (this.map?.def.id !== o.region) await this.loading.show(`Preparing ${regionById(o.region).name}…`);
-    await this.startMatch(this.lastStart);
+    const ok = await this.startMatch(this.lastStart);
     this.loading.hide();
+    if (!ok) { this.goTitle(); return; }
     this.state = 'playing';
   }
 
@@ -257,9 +260,9 @@ export class App {
     this.hovered = -1;
   }
 
-  async startMatch(opts: StartOptions) {
+  async startMatch(opts: StartOptions): Promise<boolean> {
     const ok = await this.ensureRegion(opts.region);
-    if (!ok || !this.board || !this.badges || !this.map) return;
+    if (!ok || !this.board || !this.badges || !this.map) return false;
     this.endMatch();
     const ctx = {
       root: this.root,
@@ -303,6 +306,7 @@ export class App {
       }
       this.sfx('start');
     }
+    return true;
   }
 
   endMatch() {
@@ -334,7 +338,6 @@ export class App {
       troopsSent: g.stats.troopsSent,
       biggestBattle: g.stats.biggestBattle,
       record: win && record,
-      flags: a2s.length,
     });
     m.startReplay();
     this.rig.resetView(1.2);

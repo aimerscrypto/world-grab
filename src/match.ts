@@ -57,7 +57,7 @@ export class Match {
   private ended = false;
   private endDelay = -1;
   private hitPulseTimer = 0;
-  inputLocked = false;
+  private seenHit = -99;
 
   constructor(private ctx: MatchCtx, opts: MatchOptions & { attract?: boolean }, private hooks: MatchHooks = {}) {
     this.attract = !!opts.attract;
@@ -89,7 +89,7 @@ export class Match {
 
   // ------------------------------------------------------------ input
   canDragFrom(c: number): boolean {
-    return !this.attract && !this.inputLocked && !this.game.over && !this.game.paused && c >= 0 && c < this.game.n && this.game.owner[c] === PLAYER;
+    return !this.attract && !this.game.over && !this.game.paused && c >= 0 && c < this.game.n && this.game.owner[c] === PLAYER;
   }
 
   dragStart(c: number, sx: number, sy: number) {
@@ -179,8 +179,6 @@ export class Match {
     this.targetValid = false;
   }
 
-  get isDragging() { return this.sources.length > 0; }
-
   // ------------------------------------------------------------ update
   update(dt: number, time: number) {
     const g = this.game;
@@ -202,9 +200,12 @@ export class Match {
     if (!this.attract) hud.update(g, dt);
     this.drawArrows(time);
     if (this.hitPulseTimer > 0) this.hitPulseTimer -= dt;
-    if (!this.attract && g.time - g.lastHitOnPlayer < 0.05 && this.hitPulseTimer <= 0) {
-      this.hitPulseTimer = CONFIG.fx.attackPulseCooldown;
-      this.hooks.onPlayerHit?.();
+    if (!this.attract && g.lastHitOnPlayer > this.seenHit) {
+      this.seenHit = g.lastHitOnPlayer;
+      if (this.hitPulseTimer <= 0) {
+        this.hitPulseTimer = CONFIG.fx.attackPulseCooldown;
+        this.hooks.onPlayerHit?.();
+      }
     }
     fx.update(dt, g.map.unit);
     if (this.endDelay >= 0) {

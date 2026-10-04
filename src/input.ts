@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { CameraRig } from './render/cameraRig';
+import { CONFIG } from './config';
 
 export interface InputHandlers {
   /** country under a screen point (or -1) */
@@ -145,7 +146,7 @@ export class InputController {
     e.preventDefault();
     if (!this.enabled || !this.cameraEnabled) return;
     const dy = e.deltaMode === 1 ? e.deltaY * 30 : e.deltaY;
-    this.rig.zoomAt(e.clientX, e.clientY, Math.exp(Math.max(-200, Math.min(200, dy)) * 0.0015));
+    this.rig.zoomAt(e.clientX, e.clientY, Math.exp(Math.max(-200, Math.min(200, dy)) * CONFIG.camera.wheelZoomStep));
   };
 
   /** Cancels any in-progress gesture (e.g. when a menu opens). */
@@ -155,8 +156,6 @@ export class InputController {
     this.ptrs.clear();
     this.mode = 'none';
   }
-
-  get dragging() { return this.mode === 'drag'; }
 
   groundAt(sx: number, sy: number, z: number): THREE.Vector3 | null {
     return this.rig.screenToGround(sx, sy, this.tmp, z) ? this.tmp : null;

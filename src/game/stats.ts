@@ -1,4 +1,4 @@
-import type { Difficulty } from '../config';
+import { CONFIG, type Difficulty } from '../config';
 import type { Quality } from '../render/stage';
 
 /** Persistent player progress (localStorage, every access wrapped in try/catch). */
@@ -42,7 +42,7 @@ function write(key: string, value: unknown) {
 }
 
 export const defaultStats = (): SavedStats => ({ wins: {}, plays: {}, fastest: {}, totalCaptured: 0, flags: [], matches: 0 });
-export const defaultSettings = (): Settings => ({ muted: false, music: true, quality: 'auto', tutorialDone: false, lastDifficulty: 'normal', lastBots: 3 });
+export const defaultSettings = (): Settings => ({ muted: false, music: true, quality: 'auto', tutorialDone: false, lastDifficulty: 'normal', lastBots: CONFIG.game.defaultBots });
 
 export const stats: SavedStats = read(STATS_KEY, defaultStats());
 export const settings: Settings = read(SETTINGS_KEY, defaultSettings());

@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { CONFIG } from '../config';
 import { sparkVert, sparkFrag, ringVert, ringFrag } from './shaders';
 
+const SPARK_ATTRS = ['position', 'aLife', 'aColor', 'aSize'];
+
 /** Pooled spark particles + shockwave rings. */
 export class FxSystem {
   readonly group = new THREE.Group();
@@ -58,6 +60,7 @@ export class FxSystem {
         uniforms: { uT: { value: 0 }, uColor: { value: new THREE.Color() } },
         transparent: true,
         depthWrite: false,
+        depthTest: false,
         blending: THREE.AdditiveBlending,
       });
       const mesh = new THREE.Mesh(this.ringGeo, mat);
@@ -122,7 +125,7 @@ export class FxSystem {
         this.pos[i * 3 + 2] = Math.max(0.05, this.pos[i * 3 + 2] + this.vel[i * 3 + 2] * dt);
       }
       this.alive = any;
-      for (const name of ['position', 'aLife', 'aColor', 'aSize']) this.sparkGeo.getAttribute(name).needsUpdate = true;
+      for (const name of SPARK_ATTRS) this.sparkGeo.getAttribute(name).needsUpdate = true;
     }
     for (const r of this.rings) {
       if (!r.active) continue;

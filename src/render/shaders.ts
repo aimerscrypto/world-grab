@@ -9,12 +9,13 @@ uniform sampler2D uState;
 uniform vec2 uStateSize;
 uniform float uTime;
 uniform float uUnit;
+uniform float uHoverLift;
 attribute float aCountry;
 vec4 st(float row) {
   return texture2D(uState, vec2((aCountry + 0.5) / uStateSize.x, (row + 0.5) / uStateSize.y));
 }
 float liftOf(vec4 s0, vec4 s3, vec4 s4) {
-  return s0.a + s3.x * 0.12 * uUnit + s4.y;
+  return s0.a + s3.x * uHoverLift + s4.y;
 }
 vec2 shakeOf(vec4 s4) {
   return vec2(sin(uTime * 55.0), cos(uTime * 41.0)) * s4.z * 0.12 * uUnit;
@@ -344,7 +345,7 @@ varying vec3 vColor;
 varying float vLife;
 void main() {
   vec2 c = gl_PointCoord - 0.5;
-  float a = smoothstep(0.5, 0.0, length(c));
+  float a = 1.0 - smoothstep(0.0, 0.5, length(c));
   gl_FragColor = vec4(vColor * 1.6 + vec3(0.4), a * vLife);
   #include <colorspace_fragment>
 }
@@ -367,7 +368,7 @@ void main() {
   float t = uT;
   float w = 0.06 + 0.1 * t;
   float ring = 1.0 - smoothstep(0.0, w, abs(r - t));
-  float inner = (1.0 - smoothstep(0.0, t, r)) * 0.25 * (1.0 - t);
+  float inner = (1.0 - smoothstep(0.0, max(t, 0.001), r)) * 0.25 * (1.0 - t);
   float a = (ring + inner) * (1.0 - t) * step(r, 1.0);
   gl_FragColor = vec4(uColor * 1.5 + vec3(0.2), a);
   #include <colorspace_fragment>

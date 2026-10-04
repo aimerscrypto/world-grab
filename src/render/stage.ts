@@ -52,6 +52,7 @@ export class Stage {
   setQuality(q: Quality) {
     this.qualitySetting = q;
     this.applyQuality();
+    this.onResize?.();
   }
 
   private level(): number {
@@ -114,6 +115,7 @@ export class Stage {
       if (this.lowTime > CONFIG.perf.downgradeAfter && this.autoLevel < 3) {
         this.autoLevel++;
         this.applyQuality();
+        this.onResize?.();
       }
     } else this.lowTime = Math.max(0, this.lowTime - realDt);
   }

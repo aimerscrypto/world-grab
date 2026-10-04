@@ -35,6 +35,7 @@ export class Tutorial {
   private eventHook = (e: GameEvent, m: Match) => this.onEvent(e, m);
   private sendHook = (r: { sources: number[]; target: number; troops: number }) => this.onSend(r);
   private active = false;
+  private cancelled = false;
 
   constructor(private app: App) {
     this.box = document.createElement('div');
@@ -47,10 +48,11 @@ export class Tutorial {
   async start() {
     const app = this.app;
     const map = await buildRegion('europe');
+    if (this.cancelled) return;
     const start = Math.max(0, map.countries.findIndex((c) => c.key === '276')); // Germany
     await app.startFromMenu({ region: 'europe', bots: 1, difficulty: 'easy', playerStart: start });
     const m = app.match;
-    if (!m) return;
+    if (!m || m.attract || this.cancelled) return;
     this.match = m;
     m.thinkers = []; // the rival stays passive until the tutorial is finished
     this.active = true;
@@ -202,6 +204,7 @@ export class Tutorial {
 
   dispose() {
     this.active = false;
+    this.cancelled = true;
     this.box.remove();
     this.hand.remove();
     const app = this.app;

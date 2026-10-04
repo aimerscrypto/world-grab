@@ -155,5 +155,4 @@ export class Hud {
 
   closeDrawer() { this.drawer.classList.remove('open'); }
 
-  get drawerOpen() { return this.drawer.classList.contains('open'); }
 }

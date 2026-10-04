@@ -87,6 +87,7 @@ export class Board {
       uStateSize: { value: new THREE.Vector2(n, ROWS) },
       uTime: { value: 0 },
       uUnit: { value: u },
+      uHoverLift: { value: CONFIG.slab.hoverLift * u },
     };
     this.uniformsTime.push(common.uTime);
 
@@ -129,6 +130,7 @@ export class Board {
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
       polygonOffset: true,
       polygonOffsetFactor: -2,
       polygonOffsetUnits: -2,
@@ -168,6 +170,7 @@ export class Board {
         },
         transparent: true,
         depthWrite: false,
+        side: THREE.DoubleSide,
       });
       this.uniformsTime.push(routeMat.uniforms.uTime as { value: number });
       this.addMesh(new THREE.Mesh(routeGeo, routeMat), routeMat, routeGeo, 1);
@@ -458,14 +461,9 @@ export class Board {
       const o4 = (4 * n + i) * 4;
       d[o4] = a.flash; d[o4 + 1] = bounce; d[o4 + 2] = a.shake;
       const c = this.map.countries[i];
-      this.topZ[i] = this.slabH + (c.tiny ? this.tokenH : 0) + a.height + bounce + a.hover * 0.12 * this.unit;
+      this.topZ[i] = this.slabH + (c.tiny ? this.tokenH : 0) + a.height + bounce + a.hover * CONFIG.slab.hoverLift * this.unit;
     }
     this.stateTex.needsUpdate = true;
-  }
-
-  /** Current visible colour of a country (linear rgb) — used by FX. */
-  colorOf(i: number, out: THREE.Color): THREE.Color {
-    return out.setRGB(this.stateData[i * 4], this.stateData[i * 4 + 1], this.stateData[i * 4 + 2]);
   }
 
   dispose() {

@@ -36,7 +36,6 @@ export interface ResultsData {
   troopsSent: number;
   biggestBattle: number;
   record: boolean;
-  flags: number;
 }
 
 const DIFF_LABEL: Record<Difficulty, string> = { easy: 'Easy', normal: 'Normal', hard: 'Hard' };
