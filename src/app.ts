@@ -21,6 +21,7 @@ import { Match } from './match';
 import { NEUTRAL, type GameEvent } from './game/game';
 import { createBots } from './game/bots';
 import { recordMatch, resetStats, saveSettings, settings } from './game/stats';
+import { Tutorial } from './ui/tutorial';
 
 const hex = (n: number) => '#' + n.toString(16).padStart(6, '0');
 const esc = (s: string) => s.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]!);
@@ -70,6 +71,8 @@ export class App {
   /** extra per-frame hooks (tutorial, audio) */
   onFrame: ((dt: number) => void)[] = [];
   onGameEvent: ((e: GameEvent, m: Match) => void)[] = [];
+  onPlayerSend: ((r: { sources: number[]; target: number; troops: number }) => void)[] = [];
+  private tutorial: Tutorial | null = null;
   /** sound hooks, filled in by the audio layer */
   sfx: (name: string, arg?: number) => void = () => {};
 
@@ -148,6 +151,7 @@ export class App {
         const r = this.match?.dragEnd(x, y, c);
         if (r && r.troops > 0) this.sfx('send', r.troops);
         else this.sfx('cancel');
+        if (r) for (const h of this.onPlayerSend) h(r);
       },
       dragCancel: () => this.match?.dragCancel(),
       tap: (c) => { if (this.state === 'playing') this.showInfo(c); },
@@ -217,9 +221,11 @@ export class App {
     this.state = 'playing';
   }
 
-  /** Tutorial is wired in later (phase 6); default falls back to the map picker. */
+  /** Interactive first-time tutorial (Europe vs one passive easy bot). */
   startTutorial() {
-    this.openMaps();
+    this.tutorial?.dispose();
+    this.tutorial = new Tutorial(this);
+    this.tutorial.start();
   }
 
   // ------------------------------------------------------------ boards
