@@ -1,0 +1,38 @@
+{
+  "name": "world-grab",
+  "version": "1.0.0",
+  "description": "World Grab — real-time conquest strategy on a real world map",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "meta": "node scripts/build-meta.mjs",
+    "predev": "node scripts/copy-flags.mjs",
+    "prebuild": "node scripts/copy-flags.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@fontsource/lilita-one": "^5.3.0",
+    "@fontsource/nunito": "^5.3.0",
+    "d3-geo": "^3.1.1",
+    "flag-icons": "^7.5.0",
+    "polylabel": "^2.1.0",
+    "three": "^0.186.1",
+    "topojson-client": "^3.1.0",
+    "topojson-simplify": "^3.0.3",
+    "world-atlas": "^2.0.2",
+    "world-countries": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/d3-geo": "^3.1.1",
+    "@types/three": "^0.186.0",
+    "@types/topojson-client": "^3.1.5",
+    "@types/topojson-simplify": "^3.0.3",
+    "@types/topojson-specification": "^1.0.5",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.2"
+  }
+}
